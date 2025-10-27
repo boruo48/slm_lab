@@ -1,0 +1,5 @@
+conda activate slm
+
+cd C:\Users\fshib\Desktop\code\slm
+
+python slm1.py
