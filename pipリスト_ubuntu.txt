@@ -1,0 +1,3 @@
+conda create -n sim python=3.12.12
+
+pip install opencv-python
