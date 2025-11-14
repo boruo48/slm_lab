@@ -1,8 +1,19 @@
 import time
+import sys
+# sys.path.append(r"C:/Program Files/HOLOEYE Photonics/SLM Display SDK (Python) v4.1.0/api/python")
 
-import HEDS
+# import HEDS
+# print("HEDS Loaded:", HEDS.__file__)
 import numpy as np
+# ① HOLOEYE SDK の python API へのパスを通す
+sys.path.append(r"C:/Program Files/HOLOEYE Photonics\SLM Display SDK (Python) v4.1.0/api/python")
+
+# ② HEDS ではなく hedslib を import
+import hedslib
 from hedslib.heds_types import *
+
+print("hedslib loaded from:", hedslib.__file__)
+
 
 # --- SDK の初期化 ---
 err = HEDS.SDK.Init(4, 1)                     # v4.1

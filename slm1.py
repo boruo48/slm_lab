@@ -7,7 +7,7 @@ import numpy as np
 """
 振幅画像
 """
-# img = cv2.imread("18_gray.jpg", cv2.IMREAD_GRAYSCALE)
+img = cv2.imread("18_gray.jpg", cv2.IMREAD_GRAYSCALE)
 # img = cv2.imread("19.jpg", cv2.IMREAD_GRAYSCALE)
 
 
@@ -25,7 +25,7 @@ import numpy as np
 # img = cv2.imread("./resultmi+/18/phase_100.png", cv2.IMREAD_GRAYSCALE)
 # img = cv2.imread("./resultmi+/17/phase_100.png", cv2.IMREAD_GRAYSCALE)
 # img = cv2.imread("./result_midori++/19/d_150mm/phase_19_d150mm.png", cv2.IMREAD_GRAYSCALE)
-img = cv2.imread("C:/Users/fshib/Desktop/images/result_midori++/16/d_150mm/phase_16_d150mm.png", cv2.IMREAD_GRAYSCALE)
+# img = cv2.imread("C:/Users/fshib/Desktop/images/result_midori++/16/d_150mm/phase_16_d150mm.png", cv2.IMREAD_GRAYSCALE)
 
 if img is None:
     print("画像が読み込めません。ファイルパスを確認してください。")
