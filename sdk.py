@@ -41,5 +41,3 @@ time.sleep(2.0)
 
 # --- 終了処理 ---
 slm.window().close()
-# --- 終了処理 ---
-slm.window().close()
