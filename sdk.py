@@ -1,10 +1,12 @@
-import time
 import sys
-# sys.path.append(r"C:/Program Files/HOLOEYE Photonics/SLM Display SDK (Python) v4.1.0/api/python")
+import time
 
 # import HEDS
 # print("HEDS Loaded:", HEDS.__file__)
 import numpy as np
+
+# sys.path.append(r"C:/Program Files/HOLOEYE Photonics/SLM Display SDK (Python) v4.1.0/api/python")
+
 # ① HOLOEYE SDK の python API へのパスを通す
 sys.path.append(r"C:/Program Files/HOLOEYE Photonics\SLM Display SDK (Python) v4.1.0/api/python")
 
@@ -37,5 +39,7 @@ handle.loadFromArrayU8(img)
 slm.showDataHandle(handle)
 time.sleep(2.0)
 
+# --- 終了処理 ---
+slm.window().close()
 # --- 終了処理 ---
 slm.window().close()

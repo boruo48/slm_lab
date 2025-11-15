@@ -1,0 +1,22 @@
+import HEDS
+from hedslib.heds_types import *
+
+の順番で読み込む
+
+
+PowerShellにて
+echo $Env:HEDS_PATH
+でパスが表示されないとき
+$heds = "C:\Program Files\HOLOEYE Photonics\SLM Display SDK (Python) v4.1.0"
+
+# HEDS_PATH を設定
+setx HEDS_PATH "$heds" /M
+
+# DLL のあるフォルダを PATH に追加（64bit Python 前提）
+setx PATH "$Env:PATH;$heds\bin\win64" /M
+
+でパスを設定
+
+
+HEDS というフォルダ（"C:\Program Files\HOLOEYE Photonics\SLM Display SDK (Python) v4.1.0\examples\HEDS"にある）を、
+実行するコードがあるディレクトリにコピペする
