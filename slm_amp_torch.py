@@ -55,6 +55,7 @@ def main():
 
     # ---- 振幅SLM init（必要なら index や name 指定）----
     slm_amp = HEDS.SLM.Init("index:0", True, 0.0)
+    # slm_amp = HEDS.SLM.Init("name:PLUTO", True, 0.0)
     assert slm_amp.errorCode() == HEDSERR_NoError, HEDS.SDK.ErrorString(slm_amp.errorCode())
 
     # ---- amp.pt 読み込み ----

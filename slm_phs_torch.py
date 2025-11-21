@@ -67,6 +67,7 @@ def main():
 
     # --- 位相SLM init（index:1 を位相SLMにしてるならこれ） ---
     slm_phase = HEDS.SLM.Init("index:1", True, 0.0)
+    # slm_phase = HEDS.SLM.Init("name:LETO", True, 0.0)
     assert slm_phase.errorCode() == HEDSERR_NoError, HEDS.SDK.ErrorString(slm_phase.errorCode())
 
     # --- SLM解像度取得（公式サンプル準拠） ---

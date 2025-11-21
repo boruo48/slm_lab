@@ -18,12 +18,12 @@ def init_slm():
 
     # SLM 初期化（必要なら "name:LETO" や "index:0" に変更）
     slm = HEDS.SLM.Init()
+    # slm = HEDS.SLM.Init("name:PLUTO", True, 0.0)
     if slm.errorCode() != HEDSERR_NoError:
         raise RuntimeError(f"SLM Init failed: {HEDS.SDK.ErrorString(slm.errorCode())}")
 
     print("SLM initialized.")
-    # w = SLM_W
-    # h = SLM_H
+
     # --- SLM解像度取得（公式サンプル準拠） ---
     W = int(slm.width_px())
     H = int(slm.height_px())

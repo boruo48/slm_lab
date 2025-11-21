@@ -17,6 +17,7 @@ def init_slm():
 
     # SLM 初期化（必要なら "name:LETO" や "index:0" に変更可）
     slm = HEDS.SLM.Init()
+    # slm = HEDS.SLM.Init("name:LETO", True, 0.0)
     if slm.errorCode() != HEDSERR_NoError:
         raise RuntimeError(f"SLM Init failed: {HEDS.SDK.ErrorString(slm.errorCode())}")
 
