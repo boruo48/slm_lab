@@ -1,85 +1,90 @@
 # 2台の SLM
 # 振幅PNG & 位相PNG をそれぞれの SLM に送る
 
+# -*- coding: utf-8 -*-
+
 import HEDS
 from hedslib.heds_types import *
-
 import cv2
 import numpy as np
 
-def init_two_slms():
-    # --- SDK 初期化（1回だけ） ---
+
+# --- ここに自分の SLM の解像度を設定（例：1920x1080） ---
+# AMP_W, AMP_H = 1920, 1080
+# PHASE_W, PHASE_H = 1920, 1080
+
+
+def init_slm(index: int):
+    """SLM を index 指定で初期化（index:0 = 振幅SLM、index:1 = 位相SLM）"""
     err = HEDS.SDK.Init(4, 1)
-    if err != HEDSERR_NoError:
-        raise RuntimeError(f"SDK Init failed: {HEDS.SDK.ErrorString(err)}")
+    assert err == HEDSERR_NoError, HEDS.SDK.ErrorString(err)
 
-    # --- 振幅SLM（例：index:0） ---
-    # もしデバイス名がわかっているなら "name:LETO" とか "name:Tensor" などに変えてOK
-    slm_amp = HEDS.SLM.Init("index:0")
-    if slm_amp.errorCode() != HEDSERR_NoError:
-        raise RuntimeError(f"Amp SLM Init failed: {HEDS.SDK.ErrorString(slm_amp.errorCode())}")
+    # preselector に "index:x" を入れて複数SLMを指定
+    slm = HEDS.SLM.Init(f"index:{index}", True, 0.0)
+    assert slm.errorCode() == HEDSERR_NoError, HEDS.SDK.ErrorString(slm.errorCode())
 
-    print("Amp SLM initialized.")
-    print("  Resolution:", slm_amp.width(), "x", slm_amp.height())
-
-    # --- 位相SLM（例：index:1） ---
-    slm_phase = HEDS.SLM.Init("index:1")
-    if slm_phase.errorCode() != HEDSERR_NoError:
-        raise RuntimeError(f"Phase SLM Init failed: {HEDS.SDK.ErrorString(slm_phase.errorCode())}")
-
-    print("Phase SLM initialized.")
-    print("  Resolution:", slm_phase.width(), "x", slm_phase.height())
-
-    return slm_amp, slm_phase
+    print(f"SLM {index} initialized.")
+    return slm
 
 
-
-def load_and_resize_u8(path, slm):
-    """0〜255 PNG を読み込んで、その SLM 解像度にリサイズして返す"""
-    img = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
+def show_amp_png_on_slm(png_path: str, slm, width, height):
+    """振幅PNGを振幅SLMに表示"""
+    img = cv2.imread(png_path, cv2.IMREAD_GRAYSCALE)
     if img is None:
-        raise ValueError(f"Failed to load image: {path}")
+        raise ValueError("振幅PNGが読み込めません")
 
-    h, w = slm.height(), slm.width()
-    img_resized = cv2.resize(img, (w, h), interpolation=cv2.INTER_NEAREST)
+    img = cv2.resize(img, (width, height), interpolation=cv2.INTER_NEAREST)
 
-    # 向き補正が必要ならここで flip
-    # img_resized = np.flipud(img_resized)  # 上下反転
-    # img_resized = np.fliplr(img_resized)  # 左右反転
+    # SDK に numpy を渡す
+    err, dataHandle = slm.loadImageData(img)
+    assert err == HEDSERR_NoError, HEDS.SDK.ErrorString(err)
 
-    return img_resized
+    err = dataHandle.show()
+    assert err == HEDSERR_NoError, HEDS.SDK.ErrorString(err)
+
+    print("振幅パターンを表示しました。")
 
 
-def show_amp_phase_png(amp_png_path, phase_png_path):
-    slm_amp, slm_phase = init_two_slms()
+def show_phase_png_on_slm(png_path: str, slm, width, height):
+    """位相PNGを位相SLMに表示"""
+    # SDK には「位相画像を直接ファイルから読む」関数がある
+    # loadPhaseDataFromFile() を使うとミスが少ない
+    err, dataHandle = slm.loadPhaseDataFromFile(png_path)
+    assert err == HEDSERR_NoError, HEDS.SDK.ErrorString(err)
 
-    # --- 振幅画像を読み込み＆振幅SLMサイズに合わせる ---
-    amp_u8 = load_and_resize_u8(amp_png_path, slm_amp)
+    err = dataHandle.show()
+    assert err == HEDSERR_NoError, HEDS.SDK.ErrorString(err)
 
-    # --- 位相画像を読み込み＆位相SLMサイズに合わせる ---
-    phase_u8 = load_and_resize_u8(phase_png_path, slm_phase)
+    print("位相パターンを表示しました。")
 
-    # --- 各SLMに表示 ---
-    # 関数名は、あなたの SDK example に合わせて変更してね：
-    HEDS.SLM.displayImage(slm_amp, amp_u8)      # 振幅SLM
-    HEDS.SLM.displayImage(slm_phase, phase_u8)  # 位相SLM
-    # もし example が displayDataArray を使っているなら：
-    # HEDS.SLM.displayDataArray(slm_amp, amp_u8)
-    # HEDS.SLM.displayDataArray(slm_phase, phase_u8)
 
-    print("Amp & Phase patterns displayed on their SLMs.")
+def main():
+    # --- 2 台の SLM を初期化 ---
+    slm_amp = init_slm(index=0)    # 振幅SLM
+    slm_phase = init_slm(index=1)  # 位相SLM
 
-    input("Enter を押すと両方のSLMを閉じます...")
+    SLM_AMP_W = int(slm_amp.width_px())
+    SLM_AMP_H = int(slm_amp.height_px())
+    SLM_PHS_W = int(slm_amp.width_px())
+    SLM_PHS_H = int(slm_amp.height_px())
 
-    # --- SLM ウィンドウを閉じる ---
+    # --- それぞれのSLMに画像を表示 ---
+    show_amp_png_on_slm("amp.png", slm_amp, SLM_AMP_W, SLM_AMP_H)
+    show_phase_png_on_slm("phase.png", slm_phase, SLM_PHS_W, SLM_PHS_H)
+
+    print("両SLMへの表示が完了しました。")
+    input("Enter を押すと SLM を閉じます...")
     err = slm_amp.window().close()
     if err != HEDSERR_NoError:
-        print("Amp SLM window close error:", HEDS.SDK.ErrorString(err))
-
+        print("SLM window close error:", HEDS.SDK.ErrorString(err))
     err = slm_phase.window().close()
     if err != HEDSERR_NoError:
-        print("Phase SLM window close error:", HEDS.SDK.ErrorString(err))
+        print("SLM window close error:", HEDS.SDK.ErrorString(err))
+    # print("SLMウィンドウを閉じるまで待ちます…")
+
+    HEDS.SDK.WaitAllClosed()
+    print("SLMウィンドウ終了")
 
 
 if __name__ == "__main__":
-    show_amp_phase_png("amp.png", "phase.png")
+    main()

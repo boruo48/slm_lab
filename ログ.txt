@@ -7,6 +7,7 @@ from hedslib.heds_types import *
 PowerShellにて
 echo $Env:HEDS_PATH
 でパスが表示されないとき
+管理者として実行
 $heds = "C:\Program Files\HOLOEYE Photonics\SLM Display SDK (Python) v4.1.0"
 
 # HEDS_PATH を設定

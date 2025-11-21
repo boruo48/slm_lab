@@ -5,6 +5,9 @@ from hedslib.heds_types import *
 import cv2
 import numpy as np
 
+# ★ここを自分の振幅SLMの解像度に合わせて直す（LETO-3/PLUTO-2.1 なら 1920x1080）
+# SLM_W = 1920
+# SLM_H = 1080
 
 def init_slm():
     # SDK 初期化
@@ -18,52 +21,39 @@ def init_slm():
         raise RuntimeError(f"SLM Init failed: {HEDS.SDK.ErrorString(slm.errorCode())}")
 
     print("SLM initialized.")
-    print("Resolution:", slm.width(), "x", slm.height())
+    SLM_W = int(slm.width_px())
+    SLM_H = int(slm.height_px())
+    print("Resolution:", SLM_W, "x", SLM_H)
     return slm
 
 
-def show_png_phase_on_slm(png_path: str, slm):
-    # --- ① PNG を 8bit グレースケールで読み込み ---
-    phase_u8 = cv2.imread(png_path, cv2.IMREAD_GRAYSCALE)
-    if phase_u8 is None:
-        raise ValueError(f"Failed to load PNG: {png_path}")
+def show_phase_png_on_slm(png_path: str, slm, width, height):
+    """位相PNGを位相SLMに表示"""
+    # SDK には「位相画像を直接ファイルから読む」関数がある
+    # loadPhaseDataFromFile() を使うとミスが少ない
+    err, dataHandle = slm.loadPhaseDataFromFile(png_path)
+    assert err == HEDSERR_NoError, HEDS.SDK.ErrorString(err)
 
-    print("Loaded PNG:", phase_u8.shape, phase_u8.dtype)  # 例: (H, W) uint8
+    err = dataHandle.show()
+    assert err == HEDSERR_NoError, HEDS.SDK.ErrorString(err)
 
-    # --- ② SLM の解像度に合わせる ---
-    slm_w = slm.width()
-    slm_h = slm.height()
+    print("位相パターンを表示しました。")
 
-    # 単純リサイズ（まずはこれでOK。後でパディング方式に変えてもいい）
-    phase_u8_resized = cv2.resize(
-        phase_u8,
-        (slm_w, slm_h),  # (width, height)
-        interpolation=cv2.INTER_NEAREST
-    )
-
-    # --- ③ 必要なら向き補正（上下/左右反転など） ---
-    # 実機の像を見ながら、必要に応じてコメントアウトを切り替える：
-    # phase_u8_resized = np.flipud(phase_u8_resized)   # 上下反転
-    # phase_u8_resized = np.fliplr(phase_u8_resized)   # 左右反転
-
-    # --- ④ SLM に表示 ---
-    # 関数名は SDK の example に合わせてね：
-    HEDS.SLM.displayImage(slm, phase_u8_resized)
-    # もし example が displayDataArray を使っているなら：
-    # HEDS.SLM.displayDataArray(slm, phase_u8_resized)
-
-    print("PNG phase displayed on SLM.")
 
 
 def main():
     slm = init_slm()
+    SLM_W = int(slm.width_px())
+    SLM_H = int(slm.height_px())
     # 同じフォルダに置いた phase.png を表示する例
-    show_png_phase_on_slm("phase.png", slm)
+    show_phase_png_on_slm("phase.png", slm, SLM_W, SLM_H)
 
     input("Enter を押すと SLM を閉じます...")
     err = slm.window().close()
     if err != HEDSERR_NoError:
         print("SLM window close error:", HEDS.SDK.ErrorString(err))
+    HEDS.SDK.WaitAllClosed()
+    print("SLMウィンドウ終了")
 
 
 if __name__ == "__main__":

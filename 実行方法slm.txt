@@ -3,3 +3,7 @@ conda activate slm
 cd C:\Users\fshib\Desktop\code\slm
 
 python slm1.py
+
+
+Windowsキー + Shift + ← / →
+　→ ウィンドウを左右のモニターへ即移動
