@@ -3,3 +3,8 @@ pip install opencv-python
 
 1080Ti用
 pip install torch==2.6.0 torchvision==0.21.0 torchaudio==2.6.0 --index-url https://download.pytorch.org/whl/cu118
+
+5060Ti用
+pip uninstall -y torch torchvision torchaudio
+
+pip install --pre --upgrade torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu128

@@ -3,11 +3,11 @@
 
 # -*- coding: utf-8 -*-
 
-import HEDS
-from hedslib.heds_types import *
 import cv2
 import numpy as np
+from hedslib.heds_types import *
 
+import HEDS
 
 # --- ここに自分の SLM の解像度を設定（例：1920x1080） ---
 # AMP_W, AMP_H = 1920, 1080
