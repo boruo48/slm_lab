@@ -1,0 +1,46 @@
+
+# results_prop/
+# mat/dices-1920x1080
+*.mat
+results/breakdancers/recon_by_distance
+# breakdancers1080p-AP
+# breakdancers1080p-AP_png
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# OS
+.DS_Store
+Thumbs.db
+
+# PyTorch models / checkpoints
+# *.pt
+*.pth
+*.ckpt
+
+# Tensor / array data
+*.npy
+*.npz
+
+# Torch save途中ファイル
+*.tmp
+
+# csv / tsv (大量生成されるなら)
+*.csv
+*.tsv
+
+# images / movies
+# *.png
+# *.jpg
+# *.jpeg
+# *.tiff
+# *.bmp
+# *.gif
+*.mp4
+*.avi
+*.mov
+
+DIV2K/DIV2K_train_HR
